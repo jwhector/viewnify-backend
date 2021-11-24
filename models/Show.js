@@ -8,22 +8,30 @@ mongoose.connect('mongodb://localhost/viewnify', {
 });
 
 const ShowSchema = new Schema({
+    imDb_id:{
+        type: String,
+        unique: true,
+        null: false
+    },
     title: {
-        type: string,
+        type: String,
         trim: true,
-        unique: true
+        unique: true,
+        null: false
     },
     image: {
-        type: string,
+        type: String,
         trim: true,
+        null: false
     },
     crew: {
-        type: string,
+        type: String,
         trim: true,
-        unique: true
+        unique: true,
+        null: false
     },
     imDbRating: {
-        type: array,
+        type: Number,
     },
 })
 
