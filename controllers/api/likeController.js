@@ -7,7 +7,7 @@ router.get('/:user_id',(req,res)=> {
     Like.findAll(
         {
             where: {
-                tmdb_id:req.params.id,
+                user_id:req.params.user_id,
             },   
         }
     )
