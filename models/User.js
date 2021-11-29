@@ -11,7 +11,7 @@ User.init({
         allowNull: false,
         autoIncrement:true
     },
-    userName: {
+    username: {
         type: DataTypes.STRING,
         trim: true,
         unique: true,
@@ -20,7 +20,7 @@ User.init({
             len: [6,30]
         }
     },
-    firstName: {
+    first_name: {
         type: DataTypes.STRING,
         trim: true,
         allowNull: false

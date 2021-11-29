@@ -1,5 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/connection');
+const sequelize = require('../config/sequelize');
 
 class Dislike extends Model {}
 Dislike.init({
@@ -9,11 +9,16 @@ Dislike.init({
         primaryKey: true,
         autoIncrement: true,
       },
-    tmDb_id: {
+    tmdb_id: {
         type: DataTypes.STRING,
         trim: true,
         allowNull:false
-    }
+    },
+    user_id:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: { model: 'user', key: 'id' }
+    } 
 },{
     sequelize,
     freezeTableName: true,
