@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS viewnify_db;
+CREATE DATABASE viewnify_db;
