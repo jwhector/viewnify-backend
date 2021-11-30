@@ -3,7 +3,7 @@ const router = express.Router()
 const {Like} = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
-router.get('/:user_id',tokenAuth,(req,res)=> {
+router.get('/user/:user_id',tokenAuth,(req,res)=> {
     Like.findAll(
         {
             where: {

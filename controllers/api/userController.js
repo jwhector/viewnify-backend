@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router()
-const { User } = require('../../models')
+const { User,Like, Dislike,Friend } = require('../../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const tokenAuth = require("../../middleware/tokenAuth")
+require('dotenv').config();
 
 
-router.get('/:id', (req, res) => {
+router.get('/:id', tokenAuth, (req, res) => {
     User.findOne(
         {
             where: {
@@ -62,21 +63,22 @@ router.post('/login', (req, res) => {
             }
             else if (bcrypt.compareSync(req.body.password, userData.password)) {
                 const token = jwt.sign({
-                    email:foundUser.email,
-                    id:foundUser.id
+                    email:userData.email,
+                    id:userData.id
                   },
                   process.env.JWT_SECRET
                   ,{
                     expiresIn:"2h"
-                  })    
+                  })
                   res.json({
                     token:token,
-                    user:foundUser
-                  });
+                    user:userData
+                  })
             } else {
                 return res.status(401).json({ err: "Invalid email or password" })
             }
         })
+        .catch(err => res.json(err))
 })
 router.put('/:id', tokenAuth, (req, res) => {
     User.update({
@@ -92,7 +94,7 @@ router.put('/:id', tokenAuth, (req, res) => {
         })
         .catch(err => res.json(err))
 })
-router.delete('/:id', (req, res) => {
+router.delete('/:id', tokenAuth, (req, res) => {
     User.destroy({
         where: {
             id: req.params.id,
