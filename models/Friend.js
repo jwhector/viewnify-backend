@@ -10,13 +10,9 @@ Friend.init({
     primaryKey: true,
     autoIncrement: true,
   },
-  user_id1:{
+  friends_id: {
     type: DataTypes.INTEGER,
-    allowNull:false
-  },
-  user_id2:{
-    type: DataTypes.INTEGER,
-    allowNull:false
+    allowNull: false
   }
 },
   {
