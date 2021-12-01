@@ -1,8 +1,13 @@
 const express = require('express')
 const router = express.Router()
-const { User } = require('../../models')
+const { User,Like, Dislike,Friend } = require('../../models')
 const bcrypt = require('bcrypt')
-router.get('/:id', (req, res) => {
+const jwt = require('jsonwebtoken');
+const tokenAuth = require("../../middleware/tokenAuth")
+require('dotenv').config();
+
+
+router.get('/:id', tokenAuth, (req, res) => {
     User.findOne(
         {
             where: {
@@ -18,7 +23,7 @@ router.get('/:id', (req, res) => {
                 res.status(404).json({ err: "No user found" })
             }
         })
-})
+});
 router.get('/', (req, res) => {
     User.findAll()
         .then(data => {
@@ -56,15 +61,26 @@ router.post('/login', (req, res) => {
             if (!req.body.password) {
                 return res.status(401).json({ err: "Invalid email or password" })
             }
-            if (bcrypt.compareSync(req.body.password, userData.password)) {
-                // Need to know what front end needs
-                return res.json(userData)
+            else if (bcrypt.compareSync(req.body.password, userData.password)) {
+                const token = jwt.sign({
+                    email:userData.email,
+                    id:userData.id
+                  },
+                  process.env.JWT_SECRET
+                  ,{
+                    expiresIn:"2h"
+                  })
+                  res.json({
+                    token:token,
+                    user:userData
+                  })
             } else {
                 return res.status(401).json({ err: "Invalid email or password" })
             }
         })
+        .catch(err => res.json(err))
 })
-router.put('/:id', (req, res) => {
+router.put('/:id', tokenAuth, (req, res) => {
     User.update({
         genres: req.body.genres,
         streaming_service: req.body.streaming_service
@@ -78,7 +94,7 @@ router.put('/:id', (req, res) => {
         })
         .catch(err => res.json(err))
 })
-router.delete('/:id', (req, res) => {
+router.delete('/:id', tokenAuth, (req, res) => {
     User.destroy({
         where: {
             id: req.params.id,
