@@ -3,11 +3,11 @@ const router = express.Router()
 const { Dislike } = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
-router.get('/user/:user_id', tokenAuth, (req, res) => {
+router.get('/user/', tokenAuth, (req, res) => {
     Dislike.findAll(
         {
             where: {
-                user_id: req.params.user_id,
+                user_id: req.user.id,
             },
         }
     )
@@ -21,7 +21,7 @@ router.get('/user/:user_id', tokenAuth, (req, res) => {
 })
 
 //find one at its id number
-router.get('/:id', (req, res) => {
+router.get('/:id', tokenAuth, (req, res) => {
     Dislike.findOne(
         {
             where: {
@@ -42,7 +42,7 @@ router.get('/:id', (req, res) => {
 router.post('/', tokenAuth, (req, res) => {
     Dislike.create({
         tmdb_id: req.body.tmdb_id,
-        user_id: req.body.user_id,
+        user_id: req.user.id,
     })
         .then(likeData => {
             res.json(likeData)
@@ -57,6 +57,7 @@ router.delete('/:id', tokenAuth, (req, res) => {
     Dislike.destroy({
         where: {
             id: req.params.id,
+            user_id: req.user.id,
         },
     })
         .then(deleted => {

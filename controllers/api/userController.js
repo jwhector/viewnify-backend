@@ -86,7 +86,7 @@ router.post('/login', (req, res) => {
                 },
                     process.env.JWT_SECRET
                     , {
-                        expiresIn: "2h"
+                        expiresIn: "12h"
                     })
                 res.json({
                     token: token,
@@ -98,24 +98,25 @@ router.post('/login', (req, res) => {
         })
         .catch(err => res.json(err))
 })
-router.put('/:id', tokenAuth, (req, res) => {
-    User.update({
-        genres: req.body.genres,
-        streaming_service: req.body.streaming_service
-    }, {
-        where: {
-            id: req.params.id
+router.put('/', tokenAuth, (req, res) => {
+    User.findOne({where: {id: req.user.id}})
+    .then(userData => {
+        if(userData) {
+            userData.set({
+                genres: req.body.genres,
+                streaming_service: req.body.streaming_service
+            })
+            userData.save();
+            res.json(userData);
+
         }
     })
-        .then(updatedData => {
-            res.json(updatedData)
-        })
-        .catch(err => res.json(err))
+    .catch(err => res.json(err))
 })
-router.delete('/:id', tokenAuth, (req, res) => {
+router.delete('/', tokenAuth, (req, res) => {
     User.destroy({
         where: {
-            id: req.params.id,
+            id: req.user.id,
         },
     })
         .then(deleted => {
