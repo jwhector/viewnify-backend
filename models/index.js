@@ -26,12 +26,9 @@ User.hasMany(Friend, {
     onDelete: 'CASCADE'
 });
 
-Friend.belongsToMany(User, {
-    through: 'UserFriend'
-});
-
-User.belongsToMany(Friend, {
-    through: "UserFriend"
+Friend.belongsTo(User, {
+    foreignKey: "user_id",
+    onDelete: "CASCADE"
 });
 
 module.exports = {
