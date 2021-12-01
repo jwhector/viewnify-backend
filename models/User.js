@@ -11,15 +11,15 @@ User.init({
         allowNull: false,
         autoIncrement:true
     },
-    username: {
-        type: DataTypes.STRING,
-        trim: true,
-        unique: true,
-        allowNull: false,
-        validate: {
-            len: [6,30]
-        }
-    },
+    // username: {
+    //     type: DataTypes.STRING,
+    //     trim: true,
+    //     unique: true,
+    //     allowNull: false,
+    //     validate: {
+    //         len: [6,30]
+    //     }
+    // },
     first_name: {
         type: DataTypes.STRING,
         trim: true,
@@ -54,12 +54,12 @@ User.init({
 },{
     hooks:{
         beforeCreate(newUser) {
-            newUser.username = newUser.username.toLowerCase();
+            // newUser.username = newUser.username.toLowerCase();
             newUser.password = bcrypt.hashSync(newUser.password, 5);
             return newUser;
         },
         beforeUpdate(updatedUser) {
-            updatedUser.username = updatedUser.username.toLowerCase();
+            // updatedUser.username = updatedUser.username.toLowerCase();
             updatedUser.password = bcrypt.hashSync(updatedUser.password, 5);
             return updatedUser;
         }
