@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { Friend, Like, Dislike } = require('../../models')
+const tokenAuth = require("../../middleware/tokenAuth")
 
 // FOLLOWING WAS CREATED TO TEST MANY-TO-MANY CREATION POSSIBILITIES, DOES NOT HAVE TO KEPT
 // router.get('/', (req, res) => {
@@ -16,7 +17,7 @@ const { Friend, Like, Dislike } = require('../../models')
 //         })
 // })
 
-router.get('/:user_id', (req, res) => {
+router.get('/:user_id', tokenAuth, (req, res) => {
     Friend.findAll({
         where: { user_id: req.params.user_id },
         include: [Like, Dislike, Friend]
@@ -31,10 +32,13 @@ router.get('/:user_id', (req, res) => {
 })
 
 //find one at based on friend's id
-router.get('/:friends_id', (req, res) => {
+router.get('/:friends_id', tokenAuth, (req, res) => {
     Friend.findOne(
         {
-            where: { friends_id: req.params.friends_id },
+            where: { 
+                user_id: req.user.id,
+                friends_id: req.params.friends_id
+            },
             include: [Like, Dislike, Friend]
 
         })
@@ -48,7 +52,7 @@ router.get('/:friends_id', (req, res) => {
 })
 
 //Creates friend table
-router.post('/', (req, res) => {
+router.post('/', tokenAuth, (req, res) => {
     Friend.create({
         user_id: req.user.id,
         friends_id: req.body.friend_id
@@ -60,7 +64,7 @@ router.post('/', (req, res) => {
 });
 
 //deletes by id
-router.delete('/:id', (req, res) => {
+router.delete('/:id', tokenAuth, (req, res) => {
     Friend.destroy({
         where: {
             id: req.params.id,

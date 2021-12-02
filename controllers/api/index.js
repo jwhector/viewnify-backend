@@ -14,7 +14,7 @@ const friendRoutes = require('./friendController')
 router.use('/friends', friendRoutes)
 
 const watchpartyRoutes = require('./watchpartyController')
-router.use('/watchpartys', watchpartyRoutes)
+router.use('/watchparty', watchpartyRoutes)
 
 const sharedRoutes = require('./sharedContoller')
 router.use('/shared', sharedRoutes)
