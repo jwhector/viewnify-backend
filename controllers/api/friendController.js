@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Friend } = require('../../models')
+const { Friend, Like, Dislike } = require('../../models')
 
 // FOLLOWING WAS CREATED TO TEST MANY-TO-MANY CREATION POSSIBILITIES, DOES NOT HAVE TO KEPT
 // router.get('/', (req, res) => {
@@ -50,7 +50,7 @@ router.get('/:friends_id', (req, res) => {
 //Creates friend table
 router.post('/', (req, res) => {
     Friend.create({
-        user_id: req.body.id,
+        user_id: req.user.id,
         friends_id: req.body.friend_id
     })
         .then(friendData => {

@@ -63,8 +63,11 @@ router.post('/', (req, res) => {
                 user: userData
             });
         })
-        .catch((err) => res.status(500).json(err));
-});
+        .catch(err => {
+            console.log(err)
+            res.status(500).json(err)
+        })
+})
 router.post('/login', (req, res) => {
     User.findOne({
         where: {
