@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
+const { Dislike } = require('../models')
 
-let genres
-let providers
 
-router.get('/tmdbMovies', (req, res) => {
+router.get('/tmdbSearch', async (req, res) => {
+    let genres
+    let providers
     let apiKey = process.env.API_KEY
 
     let format = req.body.format
@@ -15,24 +16,43 @@ router.get('/tmdbMovies', (req, res) => {
         genres = `&with_genres=${req.body.genres}`
     }
 
-    if (!req.body.providers) {
+    if (!req.body.streaming_service) {
         providers = ''
     } else {
-        providers = `&with_watch_providers=${req.body.providers}`
+        providers = `&with_watch_providers=${req.body.streaming_service}`
     }
 
 
     let requstedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1${genres}${providers}&watch_region=us&with_watch_monetization_types=flatrate`
 
-    fetch(requstedURL)
-        .then(response => {
-            return response.json()
-        })
-        .then(data => {
-            console.log(data)
-            res.json(data)
-        })
-        .catch((err) => res.json(err))
+    // fetch(requstedURL)
+    //     .then(response => {
+    //         console.log(response)
+    //         return response.json()
+    //     }).then(async (data) => {
+    //         console.log(data)
+    //         const movieResults = await res.json(data)
+    //         console.log(movieResults)
+    //     }).catch(err => {
+    //         res.json(err)
+    //     })
+    
+    //     const dislikes = await Dislike.findAll({
+    //         where:{
+    //             user_id: req.user.id
+    //         },
+    //         attributes: [tmdb_id]            
+    //     }).then(dislikeData=>{
+    //         console.log(dislikeData)
+    //         return dislikes
+    //     })
+        
+    //     for (let i = 0; i < movieResults.length; i++) {
+    //         const element = movieResults[i];
+            
+    //     }
+
+
 })
 
 // router.get('/tmdbTV', (req, res) => {
