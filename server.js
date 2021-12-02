@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3005
 // app.use(cors())
 //DEPLOYED kept this uncommented for main git/heroku
 app.use(cors({
-    origin:["process.env.DEPLOYED_WEBSITE"]
+    origin:[process.env.DEPLOYED_WEBSITE]
 }))
 
 app.use(logger("dev"));
