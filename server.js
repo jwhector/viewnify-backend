@@ -8,17 +8,16 @@ const sequelize = require('./config/sequelize.js')
 const app = express();
 const PORT = process.env.PORT || 3005
 
-//LOCAL
+//LOCAL if running local uncomment this if your running locally
 app.use(cors())
-//DEPLOYED
+//DEPLOYED kept this uncommented for main git/heroku
 // app.use(cors({
-//     origin:[" "]
+//     origin:["process.env.DEPLOYED_WEBSITE"]
 // }))
 
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(express.static("public"));
 
 const {Dislike,Like,Friend,User} = require('./models')
 app.use(routes)
