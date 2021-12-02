@@ -1,37 +1,29 @@
 const express = require("express");
-const mongoose = require('mongoose')
 const logger = require("morgan");
-const cors = rwquire("cors")
-const allroutes = require("./controllers")
+const cors = require("cors")
+const routes = require("./controllers")
+const sequelize = require('./config/sequelize.js')
 
-const PORT = process.env.PORT || 3005
 
 const app = express();
+const PORT = process.env.PORT || 3005
 
-//LOCAL
+//LOCAL if running local uncomment this if your running locally
 app.use(cors())
-//DEPLOYED
+//DEPLOYED kept this uncommented for main git/heroku
 // app.use(cors({
-//     origin:[" "]
+//     origin:["process.env.DEPLOYED_WEBSITE"]
 // }))
 
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// app.use(express.static("public"));
 
-mongoose.connect(
-    process.env.MONGODB_URI || 'mongodb://localhost/viewnify',
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      // useCreateIndex: true,
-      // useFindAndModify: false
-    }
-  )
+const {Dislike,Like,Friend,User} = require('./models')
+app.use(routes)
 
-app.use('/', allroutes)
-
-app.listen(PORT, () => {
-    console.log(`App running on port ${PORT}!`);
+sequelize.sync({ force: false }).then(function() {
+  app.listen(PORT, function() {
+  console.log('App listening on PORT ' + PORT);
+  });
 });

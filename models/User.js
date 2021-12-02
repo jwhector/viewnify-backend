@@ -1,38 +1,73 @@
-const mongoose = require("mongoose")
-const Schema = mongoose.Schema
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const bcrypt = require("bcrypt");
 
-mongoose.connect('mongodb://localhost/viewnify', {
-    useNewUrlParser: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true,
-});
+class User extends Model { }
 
-const UserSchema = new Schema({
-    userName: {
-        type: string,
+User.init({
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+        autoIncrement:true
+    },
+    // username: {
+    //     type: DataTypes.STRING,
+    //     trim: true,
+    //     unique: true,
+    //     allowNull: false,
+    //     validate: {
+    //         len: [6,30]
+    //     }
+    // },
+    first_name: {
+        type: DataTypes.STRING,
         trim: true,
-        unique: true
+        allowNull: false
     },
     password: {
-        type: string,
+        type: DataTypes.STRING,
         trim: true,
+        allowNull: false,
+        validate: {
+            len:[8]
+        }
     },
     email: {
-        type: string,
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+            isEmail: true
+        }
+    },
+    genres: {
+        type: DataTypes.STRING,
         trim: true,
-        unique: true
+        allowNull: false
     },
-    showsLiked: {
-        type: array,
+    streaming_service: {
+        type: DataTypes.STRING,
+        trim: true,
+        allowNull: false
+    },    
+},{
+    hooks:{
+        beforeCreate(newUser) {
+            // newUser.username = newUser.username.toLowerCase();
+            newUser.password = bcrypt.hashSync(newUser.password, 5);
+            return newUser;
+        },
+        beforeUpdate(updatedUser) {
+            // updatedUser.username = updatedUser.username.toLowerCase();
+            updatedUser.password = bcrypt.hashSync(updatedUser.password, 5);
+            return updatedUser;
+        }
     },
-    showsDisiked: {
-        type: array,
-    },
-    friends: {
-        type: array,
-    },
+    sequelize,
+    freezeTableName: true,
+    underscored: true,
+    modelName: 'user'
 })
-
-const User = mongoose.model("User", UserSchema)
 
 module.exports = User
