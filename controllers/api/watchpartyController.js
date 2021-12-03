@@ -45,10 +45,17 @@ router.post('/', tokenAuth, (req, res) => {
         limit: req.body.limit,
         user_id: req.user.id,
     })
-        .then(memberData => {
-            res.json(memberData)
-        })
-        .catch((err) => res.json(err));
+    .then(watchpartyData => {
+            Member.create({
+                watchparty_id:watchpartyData.id,
+                user_id: req.user.id,
+            })
+            .then(memberData => {
+                res.json(memberData)
+            })
+            .catch((err) => res.json(err));  
+    })
+    .catch((err) => res.json(err));
 });
 
 
@@ -100,13 +107,12 @@ router.post('/join/:id',tokenAuth,(req,res)=> {
         }
     )
     .then(data => {
-            if(data.limit> data.member.length) {
+            if(data[0].limit> data[0].members.length) {
                 Member.create({
                     watchparty_id:req.params.id,
                     user_id: req.user.id,
                 })
                 .then(memberData => {
-                    
                     Like.findAll({
                         where: {
                             user_id: req.user.id
@@ -117,9 +123,9 @@ router.post('/join/:id',tokenAuth,(req,res)=> {
                         attributes: ['tmdb_id']
                     })
                     .then(userData => {
-                        if(userData){Like.findOne({
+                        if(userData){Like.findAll({
                             where: {
-                                user_id: data.member[0].user_id
+                                user_id: data[0].members[0].user_id
                             },
                             order: [
                                 ['tmdb_id', 'DESC']
@@ -136,12 +142,14 @@ router.post('/join/:id',tokenAuth,(req,res)=> {
                                             tmdb_id: userData[i].tmdb_id,
                                             watchparty_id: req.params.id
                                         })
+                                        i++;
+                                        j++;
                                     }
                                     else if(userData[i].tmdb_id.localeCompare(friendData[j].tmdb_id) == -1) {
-                                        i++
+                                        j++
                                     }
                                     else {
-                                        j++
+                                        i++
                                     }
                                     
                                 }
