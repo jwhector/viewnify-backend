@@ -45,8 +45,15 @@ router.post('/',tokenAuth, (req,res)=> {
         limit:req.body.limit,
         user_id: req.user.id,
     })
-    .then(memberData => {
-        res.json(memberData)
+    .then(watchpartyData => {
+            Member.create({
+                watchparty_id:watchpartyData.id,
+                user_id: req.user.id,
+            })
+            .then(memberData => {
+                res.json(memberData)
+            })
+            .catch((err) => res.json(err));  
     })
     .catch((err) => res.json(err));
 });
