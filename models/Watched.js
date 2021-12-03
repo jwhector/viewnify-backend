@@ -3,7 +3,6 @@ const sequelize = require('../config/sequelize');
 
 class Watched extends Model { }
 
-
 Watched.init({
     id: {
         type: DataTypes.INTEGER,
@@ -16,14 +15,14 @@ Watched.init({
         allowNull: false,
         trim: true,
     },
+    watched_with: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: 'user', key: 'id' }
-    },
-    watched_with: {
-        type: DataTypes.STRING,
-        allowNull: true
     }
 }, {
     sequelize,
