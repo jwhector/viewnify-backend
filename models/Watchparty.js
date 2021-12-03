@@ -12,6 +12,7 @@ Watchparty.init({
     limit: {
         type: DataTypes.INTEGER,
         allowNull:false,
+        defaultValue:2,
     },
     user_id:{
         type: DataTypes.INTEGER,
