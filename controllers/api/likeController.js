@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {Like} = require('../../models')
+const {Like, Dislike} = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
 router.get('/user/',tokenAuth,(req,res)=> {
@@ -40,14 +40,36 @@ router.get('/:id',tokenAuth, (req,res)=> {
 
 //Creates like table
 router.post('/',tokenAuth, (req,res)=> {
-    Like.create({
-        tmdb_id:req.body.tmdb_id,
-        user_id: req.user.id,
+    Like.findOne({ 
+        where: {
+            tmdb_id:req.body.tmdb_id,
+            user_id: req.user.id, 
+        }
     })
-    .then(likeData => {
-        res.json(likeData)
+    .then(findLikeData => {
+        Dislike.findOne({ 
+            where: {
+                tmdb_id:req.body.tmdb_id,
+                user_id: req.user.id, 
+            }
+        })
+        .then(findDislikeData => {
+
+            if(!findLikeData && !findDislikeData) {
+                
+                Like.create({
+                    tmdb_id:req.body.tmdb_id,
+                    user_id: req.user.id,
+                })
+                .then(likeData => {
+                    res.json(likeData)
+                })
+                .catch((err) => res.json(err))
+            }
+            else{res.json({err: "Already liked or disliked"})}
+        })
     })
-    .catch((err) => res.json(err));
+    .catch(err=> res.json(err))
 });
 
 

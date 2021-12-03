@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {Watchparty} = require('../../models')
+const {Watchparty, Shared, Member, User,Like} = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
 router.get('/user/',tokenAuth,(req,res)=> {
@@ -27,7 +27,8 @@ router.get('/:id',tokenAuth, (req,res)=> {
             where: {
                 id:req.params.id,
             },
-        }
+            include: [Shared, Member]
+        },
     )
     .then(data => {
         if(data) {
@@ -66,6 +67,103 @@ router.delete('/:id', tokenAuth, (req,res)=> {
         }
     })
     .catch(err=>res.status(500).json(err))
+})
+
+router.get('/join/:id',tokenAuth,(req,res)=> {
+    Watchparty.findAll(
+        {
+            where: {
+                id:req.user.id,
+            },
+            include: [Member]   
+        }
+    )
+    .then(data => {
+            if(data.limit> data.member.length) {
+                res.json({isSpace: true})
+            }
+            else {
+                res.json({isSpace: false})
+            }
+        
+    })
+    .catch(err=> res.json(err))
+})
+
+router.post('/join/:id',tokenAuth,(req,res)=> {
+    Watchparty.findAll(
+        {
+            where: {
+                id:req.params.id,
+            },
+            include: [Member]   
+        }
+    )
+    .then(data => {
+            if(data.limit> data.member.length) {
+                Member.create({
+                    watchparty_id:req.params.id,
+                    user_id: req.user.id,
+                })
+                .then(memberData => {
+                    
+                    Like.findAll({
+                        where: {
+                            user_id: req.user.id
+                        },
+                        order: [
+                            ['tmdb_id', 'DESC']
+                        ],
+                        attributes: ['tmdb_id']
+                    })
+                    .then(userData => {
+                        if(userData){Like.findOne({
+                            where: {
+                                user_id: data.member[0].user_id
+                            },
+                            order: [
+                                ['tmdb_id', 'DESC']
+                            ],
+                            attributes: ['tmdb_id']
+                        })
+                        .then(friendData => {
+                            if(friendData) {
+                                let j = 0
+                                let i = 0
+                                while(i < userData.length || j < friendData.length) {
+                                    if(userData[i].tmdb_id === friendData[j].tmdb_id) {
+                                        Shared.create({
+                                            tmdb_id: userData[i].tmdb_id,
+                                            watchparty_id: req.params.id
+                                        })
+                                    }
+                                    else if(userData[i].tmdb_id.localeCompare(friendData[j].tmdb_id) == -1) {
+                                        i++
+                                    }
+                                    else {
+                                        j++
+                                    }
+                                    
+                                }
+                                res.json(memberData)
+                            }
+                        })
+                        .catch(err => res.json(err))}
+                    })
+                    .catch(err => res.json(err))
+
+
+                })
+                .catch((err) => res.json(err));  
+
+
+            }
+            else {
+                res.json({err: 'No more space left for this watchparty'})
+            }
+        
+    })
+    .catch(err=> res.json(err))
 })
 
 module.exports = router
