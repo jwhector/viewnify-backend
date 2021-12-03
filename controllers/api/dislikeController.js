@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { Dislike } = require('../../models')
+const { Dislike, Like } = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
 router.get('/user/', tokenAuth, (req, res) => {
