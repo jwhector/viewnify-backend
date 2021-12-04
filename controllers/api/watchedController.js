@@ -42,6 +42,23 @@ router.post('/', tokenAuth,(req,res)=>{
     })
 })
 
+router.put('./update/:tmdb_id', tokenAuth, (req,res)=>{
+    Watched.findOne({
+        where:{
+        user_id: req.user.id,
+        tmdb_id: req.params.tmdb_id
+        }
+    }).then(watchedData=>{
+        if(watchedData){
+            watchedData.set({
+                watched_with: req.body.watched_with
+            })
+            watchedData.save()
+            res.json(watchedData)
+        }
+    })
+})
+
 
 
 //TO BE MOVED TO WATCHPARTY OR CHILD OF CONTROLLER TO CREATE NEW WATCHED TABLE

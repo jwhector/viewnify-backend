@@ -72,11 +72,11 @@ Shared.belongsTo(Watchparty, {
 });
 
 Watched.belongsTo(User, {
-    foreignKey: user_id
+    foreignKey: 'user_id'
 })
 
 User.hasMany(Watched, {
-    foreignKey: user_id,
+    foreignKey: 'user_id',
     onDelete: 'CASCADE'
 })
 
