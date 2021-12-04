@@ -1,42 +1,34 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
-const randomURL = require('../middleware/randomURL')
 
-class Watchparty extends Model { }
-Watchparty.init({
+class Watched extends Model { }
+
+Watched.init({
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
     },
-    url:{
+    tmdb_id: {
         type: DataTypes.STRING,
-        allowNull:false,
-        defaultValue: "2"
-    },
-    limit: {
-        type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: 2,
+        trim: true,
     },
+    // watched_with: {
+    //     type: DataTypes.STRING,
+    //     allowNull: true
+    // },
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: 'user', key: 'id' }
     }
 }, {
-    hooks:{
-        beforeCreate(newParty) {
-            newParty.url = randomURL()
-            return newParty;
-        }
-    },
     sequelize,
     freezeTableName: true,
     underscored: true,
-    modelName: 'watchparty',
+    modelName: 'watched',
 })
 
-
-module.exports = Watchparty
+module.exports = Watched

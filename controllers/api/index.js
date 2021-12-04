@@ -22,4 +22,7 @@ router.use('/shared', sharedRoutes)
 const memberRoutes = require('./memberController')
 router.use('/members', memberRoutes)
 
+const watchedRoutes = require('./watchedController')
+router.use('/watched', watchedRoutes)
+
 module.exports = router;
