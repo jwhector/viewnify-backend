@@ -7,6 +7,23 @@ const tokenAuth = require("../../middleware/tokenAuth")
 require('dotenv').config();
 
 
+router.get('/verify', tokenAuth, (req, res) => {
+    User.findOne({
+        where: {
+            id: req.user.id
+        },
+    })
+        .then(data => {
+            // console.log('VERIFICATION DATA');
+            // console.log(data);
+            if (data) {
+                res.status(200).json(data)
+            } else {
+                res.status(404).json({ err: "No user found" })
+            }
+        });
+});
+
 router.get('/:id', tokenAuth, (req, res) => {
     User.findOne(
         {
@@ -24,6 +41,9 @@ router.get('/:id', tokenAuth, (req, res) => {
             }
         })
 });
+
+
+
 router.get('/', tokenAuth, (req, res) => {
     User.findOne({
         where: {
@@ -37,8 +57,8 @@ router.get('/', tokenAuth, (req, res) => {
             } else {
                 res.status(404).json({ err: "No user found" })
             }
-        })
-})
+        });
+});
 
 router.post('/', (req, res) => {
     User.create({
