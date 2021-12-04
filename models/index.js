@@ -6,6 +6,7 @@ const Watchparty = require('./Watchparty');
 const Shared = require('./Shared');
 const Member = require('./Member');
 const Watched = require('./Watched');
+const With = require('./With');
 
 User.hasMany(Like, {
     foreignKey: 'user_id',
@@ -80,6 +81,15 @@ User.hasMany(Watched, {
     onDelete: 'CASCADE'
 })
 
+With.belongsTo(Watched,{
+    foreignKey: 'watched_id'
+})
+
+Watched.hasMany(With, {
+    foreignKey: 'watched_id',
+    onDelete: 'CASCADE'
+})
+
 module.exports = {
-    Like, Friend, Dislike, User, Watchparty, Shared, Member, Watched
+    Like, Friend, Dislike, User, Watchparty, Shared, Member, Watched, With
 }

@@ -1,34 +1,29 @@
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/sequelize');
 
-class Watched extends Model { }
+class With extends Model { }
 
-Watched.init({
+With.init({
     id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
     },
-    tmdb_id: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        trim: true,
+    user_id:{
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
-    // watched_with: {
-    //     type: DataTypes.STRING,
-    //     allowNull: true
-    // },
-    user_id: {
+    watched_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references: { model: 'user', key: 'id' }
+        references: { model: 'watched', key: 'id' }
     }
 }, {
     sequelize,
     freezeTableName: true,
     underscored: true,
-    modelName: 'watched',
+    modelName: 'with',
 })
 
-module.exports = Watched
+module.exports = With

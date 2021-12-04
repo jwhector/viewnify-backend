@@ -1,10 +1,16 @@
 const express = require('express')
 const router = express.Router()
-const { Watched, Watchparty, Shared, Member, User, Like } = require('../../models')
+const { Watched, With, Watchparty, Shared, Member, User, Like } = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
 router.get('/', tokenAuth, (req, res) => {
-    Watched.findAll({})
+    Watched.findAll({
+        include: [{
+            model: With,
+            attributes: ['user_id']
+        }
+        ]
+    })
         .then(data => {
             res.json(data)
         }).catch(err => {
@@ -17,7 +23,12 @@ router.get('/:id', tokenAuth, (req, res) => {
     Watched.findAll({
         where: {
             user_id: req.user.id,
+        },
+        include: [{
+            model: With,
+            attributes: ['user_id']
         }
+        ]
     }).then(data => {
         if (data) {
             res.status(200).json(data)
@@ -30,11 +41,11 @@ router.get('/:id', tokenAuth, (req, res) => {
     })
 })
 
-router.post('/', tokenAuth,(req,res)=>{
+router.post('/', tokenAuth, (req, res) => {
     Watched.create({
         tmdb_id: req.body.tmdb_id,
         user_id: req.user.id
-    }).then(newWatched =>{
+    }).then(newWatched => {
         res.json(newWatched)
     }).catch(err => {
         console.log(err)
@@ -42,14 +53,14 @@ router.post('/', tokenAuth,(req,res)=>{
     })
 })
 
-router.put('./update/:tmdb_id', tokenAuth, (req,res)=>{
+router.put('./update/:tmdb_id', tokenAuth, (req, res) => {
     Watched.findOne({
-        where:{
-        user_id: req.user.id,
-        tmdb_id: req.params.tmdb_id
+        where: {
+            user_id: req.user.id,
+            tmdb_id: req.params.tmdb_id
         }
-    }).then(watchedData=>{
-        if(watchedData){
+    }).then(watchedData => {
+        if (watchedData) {
             watchedData.set({
                 watched_with: req.body.watched_with
             })
@@ -66,18 +77,16 @@ router.post('/', tokenAuth, (req, res) => {
     Watched.findAll({
         where: {
             tmdb_id: req.body.tmdb_id,
-            watched_with: req.body.watched_with,
             user_id: req.user.id
         }
     }).then(foundWatchedData => {
         if (foundWatchedData) {
-            return
+            res.status(409).json({ err: "Movie already watched" })
         } else {
             Watched.create({
                 tmdb_id: req.body.tmdb_id,
-                watched_with: req.body.watched_with,
                 user_id: req.user.id
-            }).then(createdWatched=>{
+            }).then(createdWatched => {
                 res.json(createdWatched)
             })
         }

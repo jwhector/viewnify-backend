@@ -4,7 +4,7 @@ const { User, Like, Dislike, Friend } = require('../../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const tokenAuth = require("../../middleware/tokenAuth")
-require('dotenv').config();
+// require('dotenv').config();
 
 
 router.get('/verify', tokenAuth, (req, res) => {
@@ -73,7 +73,7 @@ router.post('/', (req, res) => {
             // console.log(process.env.JWT_SECRET);
             const token = jwt.sign({
                 email: userData.email,
-                id: userData.id
+                id: userData.id,
             },
                 process.env.JWT_SECRET,
                 { expiresIn: "2h" }

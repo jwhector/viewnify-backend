@@ -12,7 +12,8 @@ Watchparty.init({
     },
     url:{
         type: DataTypes.STRING,
-        allowNull:true
+        allowNull:false,
+        defaultValue: "2"
     },
     limit: {
         type: DataTypes.INTEGER,
