@@ -28,40 +28,13 @@ router.get('/tmdbSearch', tokenAuth, (req, res) => {
     }).then(async (userData) => {
         const tmdbResults = await tmdbSearch(format, userData.genres, userData.streaming_service, curPg)
 
-        //CREATE FILTERING FUNCTION TO NOT SHOW RESULTS IN DISLIKE OR WATCHED TABLES FROM TMDBRESULTS AND ONLY SEND NEW INFO
-
-        let i = 0
-        let j = 0
-
-        for (let i = 0; i < userData.length; i++) {
-            for (let j = 0; j < tmdbResults.length; j++) {
-                if (userData[i] === tmdbResults[j].tmdb_id){
-
+        for (let j = tmdbResults[0].results.length - 1; j >= 0; j--) {
+            for (let i = 0; i < userData.length; i++) {
+                if (userData[i].tmdb_id == tmdbResults[0].results[j].id) {
+                    tmdbResults[0].results.splice(j, 1)
                 }
-                
             }
-            const element = array[i];
-            
         }
-        while (i < userData.length || j < tmdbResults.length) {
-            if (userData[i].tmdb_id === tmdbResults[j].tmdb_id) {
-                Shared.create({
-                    tmdb_id: userData[i].tmdb_id,
-                    watchparty_id: req.params.id
-                })
-                i++;
-                j++;
-            }
-            else if (userData[i].tmdb_id.localeCompare(tmdbResults[j].tmdb_id) == -1) {
-                j++
-            }
-            else {
-                i++
-            }
-
-        }
-        res.json(memberData)
-
         res.json(tmdbResults)
 
     }).catch(err => {
