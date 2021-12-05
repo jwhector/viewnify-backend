@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { User, Like, Dislike, Watched } = require('../models')
 const tokenAuth = require("../middleware/tokenAuth")
-const tmdbSearch = require('../middleware/tmdbSearch')
+const { tmdbSearch } = require('../middleware/tmdbSearch')
 
-router.get('/tmdbSearch', tokenAuth, (req, res) => {
+router.post('/tmdbSearch', tokenAuth, (req, res) => {
     const format = req.body.format
     const curPg = req.body.curPg
     User.findOne({
@@ -13,20 +13,15 @@ router.get('/tmdbSearch', tokenAuth, (req, res) => {
         },
         attributes: ['genres', 'streaming_service'],
         include: [{
-            model: Dislike,
-            include: ['tmdb_id'],
-            order: [
-                ['tmdb_id', 'DESC']
-            ],
+            model: Dislike, 
+            attributes: ['tmdb_id']
         }, {
             model: Watched,
-            include: ['tmdb_id'],
-            order: [
-                ['tmdb_id', 'DESC']
-            ],
+            attributes: ['tmdb_id']
         }]
     }).then(async (userData) => {
-        const tmdbResults = await tmdbSearch(format, userData.genres, userData.streaming_service, curPg)
+        const tmdbResponse = await tmdbSearch(format, userData.genres, userData.streaming_service, curPg)
+        const tmdbResults = await tmdbResponse.json()
 
         for (let j = tmdbResults[0].results.length - 1; j >= 0; j--) {
             for (let i = 0; i < userData.length; i++) {
