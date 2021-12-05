@@ -1,3 +1,4 @@
+const fetch = require('node-fetch')
 
 const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     let searchGenres
@@ -27,4 +28,13 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
         })
 })
 
-    module.exports = tmdbSearch
+const tmdbLikes = (ids) => {
+    const fetches = [];
+    for (id of ids) {
+        const requestedURL = `https://api.themoviedb.org/3/movie/${id}?api_key=3516458404b8ed5f73b3b631421314e1&language=en-US`
+        fetches.push(fetch(requestedURL))
+    }
+    return Promise.all(fetches)
+}
+
+module.exports = { tmdbSearch, tmdbLikes }
