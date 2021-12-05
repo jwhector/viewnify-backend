@@ -9,8 +9,8 @@ const tokenAuth = function(req,res,next){
                 console.log(err)
                 return res.status(403).send("invalid token")
             } else {
-                console.log("success");
-                req.user = data;
+                console.log("success")
+                req.user = data
                 next()
             }
         })
