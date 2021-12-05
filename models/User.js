@@ -20,11 +20,6 @@ User.init({
     //         len: [6,30]
     //     }
     // },
-    first_name: {
-        type: DataTypes.STRING,
-        trim: true,
-        allowNull: false
-    },
     password: {
         type: DataTypes.STRING,
         trim: true,
