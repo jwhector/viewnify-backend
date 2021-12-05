@@ -10,9 +10,6 @@ router.use("/likes", likeRoutes);
 const dislikeRoutes = require('./dislikeController');
 router.use('/dislikes', dislikeRoutes);
 
-const friendRoutes = require('./friendController')
-router.use('/friends', friendRoutes)
-
 const watchpartyRoutes = require('./watchpartyController')
 router.use('/watchparty', watchpartyRoutes)
 

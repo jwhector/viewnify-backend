@@ -1,5 +1,4 @@
 const Like = require('./Like');
-const Friend = require('./Friend');
 const Dislike = require('./Dislike');
 const User = require('./User');
 const Watchparty = require('./Watchparty');
@@ -24,16 +23,6 @@ User.hasMany(Dislike, {
 
 Dislike.belongsTo(User, {
     foreignKey: 'user_id'
-});
-
-User.hasMany(Friend, {
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE'
-});
-
-Friend.belongsTo(User, {
-    foreignKey: "user_id",
-    onDelete: "CASCADE"
 });
 
 User.hasMany(Watchparty, {
