@@ -8,7 +8,7 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     if (!genres) {
         searchGenres = ''
     } else {
-        searchGenres = `&with_genres=${12}`
+        searchGenres = `&with_genres=${genres}`
     }
 
     if (!streaming_service) {
@@ -18,7 +18,7 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     }
 
     // DELETED PROVIDERS/REGION IN URL
-    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg.curPage}&with_watch_monetization_types=flatrate`
+    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg.curPage}${searchGenres}${providers}&with_watch_monetization_types=flatrate`
 
     console.log(format, genres, streaming_service, curPg)
 
@@ -29,7 +29,8 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
 const tmdbLikes = (ids) => {
     const fetches = [];
     for (id of ids) {
-        const requestedURL = `https://api.themoviedb.org/3/movie/${id}?api_key=3516458404b8ed5f73b3b631421314e1&language=en-US`
+        const requestedURL = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
+        
         fetches.push(fetch(requestedURL))
     }
     return Promise.all(fetches)

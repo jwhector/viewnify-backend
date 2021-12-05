@@ -134,7 +134,8 @@ router.get('/compare/:id',tokenAuth, (req,res) => {
         attributes: ['tmdb_id']
     })
     .then(userData => {
-        if(userData){Like.findOne({
+        if(userData){
+            Like.findOne({
             where: {
                 user_id: req.params.id
             },

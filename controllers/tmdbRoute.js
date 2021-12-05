@@ -13,17 +13,11 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
         },
         attributes: ['genres', 'streaming_service'],
         include: [{
-            model: Dislike, // <-------------------- It was getting mad at me for the includes, it's working fine without them though.
-            // include: ['tmdb_id'],
-            // order: [
-            //     ['tmdb_id', 'DESC']
-            // ],
+            model: Dislike, 
+            attributes: ['tmdb_id']
         }, {
             model: Watched,
-            // include: ['tmdb_id'],
-            // order: [
-            //     ['tmdb_id', 'DESC']
-            // ],
+            attributes: ['tmdb_id']
         }]
     }).then(async (userData) => {
         const tmdbResponse = await tmdbSearch(format, userData.genres, userData.streaming_service, curPg)
@@ -37,7 +31,6 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
             }
         }
         res.json(tmdbResults)
-
 
     }).catch(err => {
         console.log(err)
