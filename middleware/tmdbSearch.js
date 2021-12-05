@@ -8,7 +8,7 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     if (!genres) {
         searchGenres = ''
     } else {
-        searchGenres = `&with_genres=${genres}`
+        searchGenres = `&with_genres=${12}`
     }
 
     if (!streaming_service) {
@@ -17,17 +17,15 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
         providers = `&with_watch_providers=${streaming_service}`
     }
 
-    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg}${searchGenres}${providers}&watch_region=us&with_watch_monetization_types=flatrate`
+    // DELETED PROVIDERS/REGION IN URL
+    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg.curPage}&with_watch_monetization_types=flatrate`
 
-    fetch(requestedURL)
-        // .then(response => {
-        //     return response.json()
-        // })
-        .then(tmdbData => {
-            return tmdbData.json()
-        })
+    console.log(format, genres, streaming_service, curPg)
+
+    return fetch(requestedURL)
 })
 
+// Used for Library component.
 const tmdbLikes = (ids) => {
     const fetches = [];
     for (id of ids) {
