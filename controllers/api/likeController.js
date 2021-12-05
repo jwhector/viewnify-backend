@@ -2,6 +2,39 @@ const express = require('express')
 const router = express.Router()
 const {Like, Dislike} = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
+const { tmdbLikes } = require('../../middleware/tmdbSearch')
+
+router.get('/user/tmdb',tokenAuth,(req,res)=> {
+    Like.findAll(
+        {
+            where: {
+                user_id:req.user.id,
+            }        
+        }
+    )
+    .then(data => {
+        if(data) {
+            // console.log(data);
+            const ids = data.map(entry => entry.tmdb_id)
+            console.log(ids.length)
+            tmdbLikes(ids).then(fetches => {
+                const resolves = []
+                for (db_response of fetches) {
+                    resolves.push(db_response.json())
+                }
+                Promise.all(resolves).then(media => {
+                    // console.log(media);
+                    res.status(200).json(media)
+                }).catch(err => {
+                    res.status(500).json('Failed to fetch TMDb data.');
+                    console.log(err)
+                })
+            })
+        } else {
+            res.status(404).json({err: "No user found"})
+        }
+    })
+})
 
 router.get('/user/',tokenAuth,(req,res)=> {
     Like.findAll(
