@@ -51,12 +51,11 @@ router.post('/', tokenAuth, (req, res) => {
                 user_id: req.user.id,
             })
                 .then(memberData => {
-                    res.json(memberData)
                     Watched.create({
                         tmdb_id: req.body.tmdb_id,
                         user_id: req.user.id
                     }).then(newWatched => {
-                        res.json(newWatched)
+                        res.json(watchpartyData)
                     })
                         .catch((err) => res.json(err))
                 })
@@ -87,7 +86,7 @@ router.get('/join/:id', tokenAuth, (req, res) => {
     Watchparty.findAll(
         {
             where: {
-                id: req.user.id,
+                url: req.params.id,
             },
             include: [Member]
         }
@@ -108,7 +107,7 @@ router.post('/join/:id', tokenAuth, (req, res) => {
     Watchparty.findAll(
         {
             where: {
-                id: req.params.id,
+                url: req.params.id,
             },
             include: [Member]
         }

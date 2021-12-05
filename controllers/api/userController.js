@@ -62,7 +62,6 @@ router.get('/', tokenAuth, (req, res) => {
 
 router.post('/', (req, res) => {
     User.create({
-        first_name: req.body.first_name,
         // username: req.body.username,
         password: req.body.password,
         email: req.body.email,
