@@ -42,7 +42,7 @@ router.get('/:id', tokenAuth, (req, res) => {
 //Creates like table
 router.post('/', tokenAuth, (req, res) => {
     Watchparty.create({
-        limit: req.body.limit,
+        // limit: req.body.limit,
         user_id: req.user.id,
     })
         .then(watchpartyData => {
