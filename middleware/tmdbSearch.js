@@ -1,5 +1,5 @@
 
-const tmdbSearch = ((format, genres, streaming_service) => {
+const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     let searchGenres
     let providers
     const apiKey = process.env.API_KEY
@@ -16,14 +16,14 @@ const tmdbSearch = ((format, genres, streaming_service) => {
         providers = `&with_watch_providers=${streaming_service}`
     }
 
-    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1${searchGenres}${providers}&watch_region=us&with_watch_monetization_types=flatrate`
+    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg}${searchGenres}${providers}&watch_region=us&with_watch_monetization_types=flatrate`
 
     fetch(requestedURL)
-        .then(response => {
-            return response.json()
-        })
+        // .then(response => {
+        //     return response.json()
+        // })
         .then(tmdbData => {
-            return tmdbData
+            return tmdbData.json()
         })
 })
 
