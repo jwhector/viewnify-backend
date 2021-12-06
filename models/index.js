@@ -70,15 +70,6 @@ User.hasMany(Watched, {
     onDelete: 'CASCADE'
 })
 
-With.belongsTo(Watched,{
-    foreignKey: 'watched_id'
-})
-
-Watched.hasMany(With, {
-    foreignKey: 'watched_id',
-    onDelete: 'CASCADE'
-})
-
 module.exports = {
     Like, Friend, Dislike, User, Watchparty, Shared, Member, Watched, With
 }
