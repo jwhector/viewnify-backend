@@ -21,7 +21,7 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
             attributes: ['tmdb_id']
         }, {
             model: Watched,
-            as: 'watches',
+            // as: 'watches',
             attributes: ['tmdb_id']
         }]
     }).then(async (userData) => {
@@ -29,7 +29,7 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
         const tmdbResults = await tmdbResponse.json()
 
          // Add likes/dislikes/watched to a set for O(1) lookup time
-         const haveWatched = new Set(userData.dataValues.watches.map((watched) => parseInt(watched.tmdb_id)))
+         const haveWatched = new Set(userData.dataValues.watcheds.map((watched) => parseInt(watched.tmdb_id)))
 
          const likes = new Set(userData.dataValues.likes.map((like) => parseInt(like.tmdb_id)))
          const dislikes = new Set(userData.dataValues.dislikes.map((dislike) => parseInt(dislike.tmdb_id)))

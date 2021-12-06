@@ -12,7 +12,8 @@ Watched.init({
     },
     tmdb_id: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
+        defaultValue: '',
         trim: true,
     },
     // watched_with: {
