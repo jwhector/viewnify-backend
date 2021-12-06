@@ -5,7 +5,6 @@ const Watchparty = require('./Watchparty');
 const Shared = require('./Shared');
 const Member = require('./Member');
 const Watched = require('./Watched');
-const With = require('./With');
 
 User.hasMany(Like, {
     foreignKey: 'user_id',
@@ -71,5 +70,5 @@ User.hasMany(Watched, {
 })
 
 module.exports = {
-    Like, Friend, Dislike, User, Watchparty, Shared, Member, Watched, With
+    Like, Dislike, User, Watchparty, Shared, Member, Watched
 }
