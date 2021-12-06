@@ -13,6 +13,10 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
         },
         attributes: ['genres', 'streaming_service'],
         include: [{
+            model: Like, 
+            attributes: ['tmdb_id']
+        },
+        {
             model: Dislike, 
             attributes: ['tmdb_id']
         }, {
@@ -23,14 +27,13 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
         const tmdbResponse = await tmdbSearch(format, userData.genres, userData.streaming_service, curPg)
         const tmdbResults = await tmdbResponse.json()
 
-        for (let j = tmdbResults[0].results.length - 1; j >= 0; j--) {
-            for (let i = 0; i < userData.length; i++) {
-                if (userData[i].tmdb_id == tmdbResults[0].results[j].id) {
-                    tmdbResults[0].results.splice(j, 1)
-                }
-            }
-        }
-        res.json(tmdbResults)
+         // Add likes/dislikes to a set for O(1) lookup time
+         const likes = new Set(userData.dataValues.likes.map((like) => parseInt(like.tmdb_id)))
+         const dislikes = new Set(userData.dataValues.dislikes.map((dislike) => parseInt(dislike.tmdb_id)))
+         // Filter out results that have ids in the set
+         const tmdbFiltered = [...(tmdbResults.results)].filter((tmdbResult) => !likes.has(tmdbResult.id) && !dislikes.has(tmdbResult.id) && tmdbResult.poster_path && tmdbResult.backdrop_path)
+
+        res.json(tmdbFiltered)
 
     }).catch(err => {
         console.log(err)
