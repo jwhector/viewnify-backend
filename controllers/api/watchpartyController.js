@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const { Op } = require('sequelize')
 const { Watchparty, Shared, Member, User, Like, Watched, With } = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
@@ -88,11 +89,17 @@ router.get('/join/:id', tokenAuth, (req, res) => {
         {
             where: {
                 url: req.params.id,
+                [Op.and]: {
+                    [Op.not]: { user_id: req.user.id }
+                }
             },
             include: [Member]
         }
     )
         .then(({ dataValues }) => {
+            if(!dataValues){
+                res.json({err: "No watchparty found, or you're attempting to join your own party"})
+            }
             if (dataValues.limit > dataValues.members.length) {
                 res.json({ isSpace: true })
             }
@@ -109,13 +116,16 @@ router.post('/join/:id', tokenAuth, (req, res) => {
         {
             where: {
                 url: req.params.id,
+                [Op.and]: {
+                    [Op.not]: { user_id: req.user.id }
+                }
             },
             include: [Member]
         }
     )
         .then(data => {
             // MAKE SURE OWNER CAN'T JOIN TWICE!
-            if (data[0].limit > data[0].members.length) {
+            if (data[0].limit > data[0].members.length && data[0].user_id !== req.user.id) {
                 Member.create({
                     watchparty_id: data[0].id,
                     user_id: req.user.id,

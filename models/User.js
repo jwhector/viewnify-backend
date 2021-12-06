@@ -39,12 +39,14 @@ User.init({
     genres: {
         type: DataTypes.STRING,
         trim: true,
-        allowNull: false
+        allowNull: true,
+        defaultValue: ""
     },
     streaming_service: {
         type: DataTypes.STRING,
         trim: true,
-        allowNull: false
+        allowNull: true,
+        defaultValue: ""
     },    
 },{
     hooks:{
