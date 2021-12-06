@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { User, Like, Dislike, Friend } = require('../../models')
+const { User, Like, Dislike,} = require('../../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const tokenAuth = require("../../middleware/tokenAuth")
@@ -30,7 +30,7 @@ router.get('/:id', tokenAuth, (req, res) => {
             where: {
                 id: req.params.id,
             },
-            include: [Like, Dislike, Friend]
+            include: [Like, Dislike]
         }
     )
         .then(data => {
@@ -49,7 +49,7 @@ router.get('/', tokenAuth, (req, res) => {
         where: {
             id: req.user.id
         },
-        include: [Like, Dislike, Friend]
+        include: [Like, Dislike]
     })
         .then(data => {
             if (data) {
