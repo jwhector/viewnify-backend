@@ -8,8 +8,10 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     if (!genres) {
         searchGenres = ''
     } else {
-        searchGenres = `&with_genres=${genres}`
+        searchGenres = `&with_genres=${genres.replace(',', '|')}`
     }
+
+    // searchGenres = ''
 
     if (!streaming_service) {
         providers = ''
@@ -20,14 +22,13 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     // DELETED PROVIDERS/REGION IN URL
     let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg.curPage}${searchGenres}${providers}&with_watch_monetization_types=flatrate`
 
-    console.log(format, genres, streaming_service, curPg)
-
     return fetch(requestedURL)
 })
 
 // Used for Library component.
 const tmdbLikes = (ids) => {
     const fetches = [];
+    const apiKey = process.env.API_KEY;
     for (id of ids) {
         const requestedURL = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
         
