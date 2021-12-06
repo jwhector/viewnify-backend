@@ -4,7 +4,43 @@ const { Op } = require('sequelize')
 const { Watchparty, Shared, Member, User, Like, Watched, With } = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 
-router.get('/user/', tokenAuth, (req, res) => {
+// Get all watchparties a user is associated with as well as all of those users emails.
+router.get('/party/all', tokenAuth, (req, res) => {
+    Member.findAll(
+        {
+            where: {
+                user_id: req.user.id,
+            },
+        }
+    )
+        .then(partyIds => {
+            const ids = [...partyIds].map(id => id.dataValues.watchparty_id)
+
+            const fetches = [...ids].map(id => {
+                return Watchparty.findOne({
+                    where: {
+                        id: id
+                    },
+                    include: {
+                        model: Member,
+                        include: {
+                            model: User,
+                            attributes: ['email']
+                        }
+                    }
+                })
+            })
+
+            Promise.all(fetches).then(fetched => {
+                if (fetched.length) {
+                    res.status(200).json(fetched)
+                } else {
+                    res.status(404).json({ err: "No parties found" })
+                }
+            })
+        })
+})
+router.get('/user', tokenAuth, (req, res) => {
     Watchparty.findAll(
         {
             where: {
@@ -39,6 +75,43 @@ router.get('/:id', tokenAuth, (req, res) => {
             }
         })
 })
+
+router.get('/compare/:url', tokenAuth, (req, res) => {
+    Watchparty.findOne(
+        {
+            where: {
+                url: req.params.url,
+            },
+            include: [Member]
+        }
+    )
+        .then(watchparty => {
+            const memberIds = watchparty.dataValues.members.map(member => member.dataValues.user_id)
+            if (!memberIds.includes(req.user.id)) {
+                return res.status(403).send('Unauthorized!')
+            }
+
+            const findMemberLikes = memberIds.map(id => {
+                return Like.findAll({
+                    where: {
+                        user_id: id
+                    },
+                    attributes: ['tmdb_id']
+                })
+            })
+
+            Promise.all(findMemberLikes).then(memberLikes => {
+                let likesSet = new Set(memberLikes.shift().map(like => like.dataValues.tmdb_id))
+                memberLikes.forEach(userLikeArr => {
+                    const shared = [...userLikeArr].filter(like => likesSet.has(like.dataValues.tmdb_id))
+                    likesSet = new Set([...shared].map(like => like.dataValues.tmdb_id))
+                })
+                res.json([...likesSet])
+            }).catch(err => {
+                res.status(500).json(err)
+            })
+        })
+    })
 
 //Creates like table
 router.post('/', tokenAuth, (req, res) => {
@@ -140,8 +213,8 @@ router.post('/join/:id', tokenAuth, (req, res) => {
                             // ],
                             attributes: ['tmdb_id']
                         })
-                            .then(userData => {
-                                if (userData) {
+                            .then(userLikes => {
+                                if (userLikes) {
                                     Like.findAll({
                                         where: {
                                             user_id: data[0].members[0].user_id
@@ -151,31 +224,11 @@ router.post('/join/:id', tokenAuth, (req, res) => {
                                         // ],
                                         attributes: ['tmdb_id']
                                     })
-                                        .then(friendData => {
+                                        .then(friendLikes => {
+                                            const likes = new Set([...friendLikes].map(like => like.dataValues.tmdb_id))
+                                            const sharedLikes = [...userLikes].filter(like => likes.has(like.dataValues.tmdb_id))
 
-                                            console.log(friendData);
-
-                                            // if (friendData) {
-                                            //     let j = 0
-                                            //     let i = 0
-                                            //     while (i < userData.length || j < friendData.length) {
-                                            //         if (userData[i].tmdb_id === friendData[j].tmdb_id) {
-                                            //             Shared.create({
-                                            //                 tmdb_id: userData[i].tmdb_id,
-                                            //                 watchparty_id: req.params.id
-                                            //             })
-                                            //             i++;
-                                            //             j++;
-                                            //         }
-                                            //         else if (userData[i].tmdb_id.localeCompare(friendData[j].tmdb_id) == -1) {
-                                            //             j++
-                                            //         }
-                                            //         else {
-                                            //             i++
-                                            //         }
-                                            //     }
-                                            //     res.json(memberData)
-                                            // }
+                                            res.json(sharedLikes)
                                         })
                                         .catch(err => res.json(err))
                                 }
