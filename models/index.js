@@ -80,5 +80,5 @@ Watched.hasMany(With, {
 })
 
 module.exports = {
-    Like, Friend, Dislike, User, Watchparty, Shared, Member, Watched, With
+    Like, Dislike, User, Watchparty, Shared, Member, Watched, With
 }
