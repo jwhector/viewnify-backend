@@ -3,6 +3,7 @@ const router = express.Router()
 const { Op } = require('sequelize')
 const { Watchparty, Shared, Member, User, Like, Watched, With } = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
+const { tmdbLikes } = require('../../middleware/tmdbSearch');
 
 // Get all watchparties a user is associated with as well as all of those users emails.
 router.get('/party/all', tokenAuth, (req, res) => {
@@ -86,6 +87,7 @@ router.get('/compare/:url', tokenAuth, (req, res) => {
         }
     )
         .then(watchparty => {
+            console.log(req.params.url);
             const memberIds = watchparty.dataValues.members.map(member => member.dataValues.user_id)
             if (!memberIds.includes(req.user.id)) {
                 return res.status(403).send('Unauthorized!')
@@ -106,7 +108,18 @@ router.get('/compare/:url', tokenAuth, (req, res) => {
                     const shared = [...userLikeArr].filter(like => likesSet.has(like.dataValues.tmdb_id))
                     likesSet = new Set([...shared].map(like => like.dataValues.tmdb_id))
                 })
-                res.json([...likesSet])
+                tmdbLikes([...likesSet]).then(fetches => {
+                    const resolves = []
+                    for (db_response of fetches) {
+                        resolves.push(db_response.json())
+                    }
+                    Promise.all(resolves).then(media => {
+                        res.status(200).json(media)
+                    }).catch(err => {
+                        res.status(500).json('Failed to fetch TMDb data.');
+                        console.log(err)
+                    })
+                })
             }).catch(err => {
                 res.status(500).json(err)
             })
