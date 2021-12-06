@@ -30,7 +30,7 @@ router.get('/:id', tokenAuth, (req, res) => {
             where: {
                 id: req.params.id,
             },
-            include: [Like, Dislike, Friend]
+            include: [Like, Dislike]
         }
     )
         .then(data => {
@@ -49,7 +49,7 @@ router.get('/', tokenAuth, (req, res) => {
         where: {
             id: req.user.id
         },
-        include: [Like, Dislike, Friend]
+        include: [Like, Dislike]
     })
         .then(data => {
             if (data) {
