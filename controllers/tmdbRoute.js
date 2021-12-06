@@ -37,6 +37,8 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
          // Filter out results that have ids in the set
          const tmdbFiltered = [...(tmdbResults.results)].filter((tmdbResult) => !likes.has(tmdbResult.id) && !dislikes.has(tmdbResult.id) && !haveWatched.has(tmdbResult.id) && tmdbResult.poster_path && tmdbResult.backdrop_path)
 
+         console.log(tmdbFiltered.length)
+
         res.json(tmdbFiltered)
 
     }).catch(err => {
