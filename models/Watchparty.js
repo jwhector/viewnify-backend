@@ -28,7 +28,7 @@ Watchparty.init({
 }, {
     hooks:{
         beforeCreate(newParty) {
-            newParty.url = randomURL()
+            newParty.url = randomURL();
             return newParty;
         }
     },

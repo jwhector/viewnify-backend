@@ -25,7 +25,7 @@ router.get('/:id', tokenAuth, (req, res) => {
     Watchparty.findOne(
         {
             where: {
-                id: req.params.id,
+                url: req.params.id,
             },
             include: [Shared, Member]
         },
@@ -46,6 +46,7 @@ router.post('/', tokenAuth, (req, res) => {
         user_id: req.user.id,
     })
         .then(watchpartyData => {
+            console.log(watchpartyData)
             Member.create({
                 watchparty_id: watchpartyData.id,
                 user_id: req.user.id,
@@ -83,7 +84,7 @@ router.delete('/:id', tokenAuth, (req, res) => {
 })
 
 router.get('/join/:id', tokenAuth, (req, res) => {
-    Watchparty.findAll(
+    Watchparty.findOne(
         {
             where: {
                 url: req.params.id,
@@ -91,8 +92,8 @@ router.get('/join/:id', tokenAuth, (req, res) => {
             include: [Member]
         }
     )
-        .then(data => {
-            if (data.limit > data.member.length) {
+        .then(({ dataValues }) => {
+            if (dataValues.limit > dataValues.members.length) {
                 res.json({ isSpace: true })
             }
             else {
@@ -113,9 +114,10 @@ router.post('/join/:id', tokenAuth, (req, res) => {
         }
     )
         .then(data => {
+            // MAKE SURE OWNER CAN'T JOIN TWICE!
             if (data[0].limit > data[0].members.length) {
                 Member.create({
-                    watchparty_id: req.params.id,
+                    watchparty_id: data[0].id,
                     user_id: req.user.id,
                 })
                     .then(memberData => {
@@ -123,9 +125,9 @@ router.post('/join/:id', tokenAuth, (req, res) => {
                             where: {
                                 user_id: req.user.id
                             },
-                            order: [
-                                ['tmdb_id', 'DESC']
-                            ],
+                            // order: [
+                            //     ['tmdb_id', 'DESC']
+                            // ],
                             attributes: ['tmdb_id']
                         })
                             .then(userData => {
@@ -134,34 +136,36 @@ router.post('/join/:id', tokenAuth, (req, res) => {
                                         where: {
                                             user_id: data[0].members[0].user_id
                                         },
-                                        order: [
-                                            ['tmdb_id', 'DESC']
-                                        ],
+                                        // order: [
+                                        //     ['tmdb_id', 'DESC']
+                                        // ],
                                         attributes: ['tmdb_id']
                                     })
                                         .then(friendData => {
-                                            if (friendData) {
-                                                let j = 0
-                                                let i = 0
-                                                while (i < userData.length || j < friendData.length) {
-                                                    if (userData[i].tmdb_id === friendData[j].tmdb_id) {
-                                                        Shared.create({
-                                                            tmdb_id: userData[i].tmdb_id,
-                                                            watchparty_id: req.params.id
-                                                        })
-                                                        i++;
-                                                        j++;
-                                                    }
-                                                    else if (userData[i].tmdb_id.localeCompare(friendData[j].tmdb_id) == -1) {
-                                                        j++
-                                                    }
-                                                    else {
-                                                        i++
-                                                    }
 
-                                                }
-                                                res.json(memberData)
-                                            }
+                                            console.log(friendData);
+
+                                            // if (friendData) {
+                                            //     let j = 0
+                                            //     let i = 0
+                                            //     while (i < userData.length || j < friendData.length) {
+                                            //         if (userData[i].tmdb_id === friendData[j].tmdb_id) {
+                                            //             Shared.create({
+                                            //                 tmdb_id: userData[i].tmdb_id,
+                                            //                 watchparty_id: req.params.id
+                                            //             })
+                                            //             i++;
+                                            //             j++;
+                                            //         }
+                                            //         else if (userData[i].tmdb_id.localeCompare(friendData[j].tmdb_id) == -1) {
+                                            //             j++
+                                            //         }
+                                            //         else {
+                                            //             i++
+                                            //         }
+                                            //     }
+                                            //     res.json(memberData)
+                                            // }
                                         })
                                         .catch(err => res.json(err))
                                 }
