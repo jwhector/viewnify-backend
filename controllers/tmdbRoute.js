@@ -21,17 +21,21 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
             attributes: ['tmdb_id']
         }, {
             model: Watched,
+            as: 'watches',
             attributes: ['tmdb_id']
         }]
     }).then(async (userData) => {
         const tmdbResponse = await tmdbSearch(format, userData.genres, userData.streaming_service, curPg)
         const tmdbResults = await tmdbResponse.json()
 
-         // Add likes/dislikes to a set for O(1) lookup time
+         // Add likes/dislikes/watched to a set for O(1) lookup time
+         const haveWatched = new Set(userData.dataValues.watches.map((watched) => parseInt(watched.tmdb_id)))
+
          const likes = new Set(userData.dataValues.likes.map((like) => parseInt(like.tmdb_id)))
          const dislikes = new Set(userData.dataValues.dislikes.map((dislike) => parseInt(dislike.tmdb_id)))
+
          // Filter out results that have ids in the set
-         const tmdbFiltered = [...(tmdbResults.results)].filter((tmdbResult) => !likes.has(tmdbResult.id) && !dislikes.has(tmdbResult.id) && tmdbResult.poster_path && tmdbResult.backdrop_path)
+         const tmdbFiltered = [...(tmdbResults.results)].filter((tmdbResult) => !likes.has(tmdbResult.id) && !dislikes.has(tmdbResult.id) && !haveWatched.has(tmdbResult.id) && tmdbResult.poster_path && tmdbResult.backdrop_path)
 
         res.json(tmdbFiltered)
 
