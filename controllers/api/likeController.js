@@ -9,7 +9,8 @@ router.get('/user/tmdb',tokenAuth,(req,res)=> {
         {
             where: {
                 user_id:req.user.id,
-            }        
+            },
+            order: [['updatedAt', 'DESC']]
         }
     )
     .then(data => {
