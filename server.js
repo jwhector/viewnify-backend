@@ -9,17 +9,17 @@ const app = express();
 const PORT = process.env.PORT || 3005
 
 //LOCAL if running local uncomment this if your running locally
-// app.use(cors())
+app.use(cors());
 //DEPLOYED kept this uncommented for main git/heroku
-app.use(cors({
-    origin:[process.env.DEPLOYED_WEBSITE]
-}))
+// app.use(cors({
+//     origin:[process.env.DEPLOYED_WEBSITE]
+// }))
 
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const {Dislike,Like,Friend,User} = require('./models')
+const {Dislike,Like,User} = require('./models')
 app.use(routes)
 
 sequelize.sync({ force: false }).then(function() {

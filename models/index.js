@@ -1,10 +1,10 @@
 const Like = require('./Like');
-const Friend = require('./Friend');
 const Dislike = require('./Dislike');
 const User = require('./User');
 const Watchparty = require('./Watchparty');
 const Shared = require('./Shared');
 const Member = require('./Member');
+const Watched = require('./Watched');
 
 User.hasMany(Like, {
     foreignKey: 'user_id',
@@ -22,16 +22,6 @@ User.hasMany(Dislike, {
 
 Dislike.belongsTo(User, {
     foreignKey: 'user_id'
-});
-
-User.hasMany(Friend, {
-    foreignKey: 'user_id',
-    onDelete: 'CASCADE'
-});
-
-Friend.belongsTo(User, {
-    foreignKey: "user_id",
-    onDelete: "CASCADE"
 });
 
 User.hasMany(Watchparty, {
@@ -70,7 +60,15 @@ Shared.belongsTo(Watchparty, {
     foreignKey: 'watchparty_id'
 });
 
+Watched.belongsTo(User, {
+    foreignKey: 'user_id'
+})
+
+User.hasMany(Watched, {
+    foreignKey: 'user_id',
+    onDelete: 'CASCADE'
+})
 
 module.exports = {
-    Like, Friend, Dislike, User, Watchparty, Shared, Member
+    Like, Dislike, User, Watchparty, Shared, Member, Watched
 }

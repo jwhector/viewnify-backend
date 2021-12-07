@@ -1,11 +1,28 @@
 const express = require('express')
 const router = express.Router()
-const { User, Like, Dislike, Friend } = require('../../models')
+const { User, Like, Dislike } = require('../../models')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const tokenAuth = require("../../middleware/tokenAuth")
-require('dotenv').config();
+// require('dotenv').config();
 
+
+router.get('/verify', tokenAuth, (req, res) => {
+    User.findOne({
+        where: {
+            id: req.user.id
+        },
+    })
+        .then(data => {
+            // console.log('VERIFICATION DATA');
+            // console.log(data);
+            if (data) {
+                res.status(200).json(data)
+            } else {
+                res.status(404).json({ err: "No user found" })
+            }
+        });
+});
 
 router.get('/:id', tokenAuth, (req, res) => {
     User.findOne(
@@ -13,7 +30,7 @@ router.get('/:id', tokenAuth, (req, res) => {
             where: {
                 id: req.params.id,
             },
-            include: [Like, Dislike, Friend]
+            include: [Like, Dislike]
         }
     )
         .then(data => {
@@ -24,12 +41,15 @@ router.get('/:id', tokenAuth, (req, res) => {
             }
         })
 });
+
+
+
 router.get('/', tokenAuth, (req, res) => {
     User.findOne({
         where: {
             id: req.user.id
         },
-        include: [Like, Dislike, Friend]
+        include: [Like, Dislike]
     })
         .then(data => {
             if (data) {
@@ -37,12 +57,11 @@ router.get('/', tokenAuth, (req, res) => {
             } else {
                 res.status(404).json({ err: "No user found" })
             }
-        })
-})
+        });
+});
 
 router.post('/', (req, res) => {
     User.create({
-        first_name: req.body.first_name,
         // username: req.body.username,
         password: req.body.password,
         email: req.body.email,
@@ -53,7 +72,7 @@ router.post('/', (req, res) => {
             // console.log(process.env.JWT_SECRET);
             const token = jwt.sign({
                 email: userData.email,
-                id: userData.id
+                id: userData.id,
             },
                 process.env.JWT_SECRET,
                 { expiresIn: "2h" }
@@ -82,7 +101,7 @@ router.post('/login', (req, res) => {
                 return res.status(401).json({ err: "Invalid email or password" })
             }
             else if (bcrypt.compareSync(req.body.password, userData.password)) {
-                // console.log(process.env.JWT_SECRET);
+                console.log('MADE IT TO BCRYPT');
                 const token = jwt.sign({
                     email: userData.email,
                     id: userData.id
