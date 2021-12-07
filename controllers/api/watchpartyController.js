@@ -4,6 +4,7 @@ const { Op } = require('sequelize')
 const { Watchparty, Shared, Member, User, Like, Watched, With } = require('../../models')
 const tokenAuth = require("../../middleware/tokenAuth")
 const { tmdbLikes } = require('../../middleware/tmdbSearch');
+const { restore } = require('../../models/Like')
 
 // Get all watchparties a user is associated with as well as all of those users emails.
 router.get('/party/all', tokenAuth, (req, res) => {
@@ -130,6 +131,7 @@ router.get('/compare/:url', tokenAuth, (req, res) => {
 router.post('/', tokenAuth, (req, res) => {
     Watchparty.create({
         // limit: req.body.limit,
+        name: req.body.name,
         user_id: req.user.id,
     })
         .then(watchpartyData => {
@@ -139,13 +141,34 @@ router.post('/', tokenAuth, (req, res) => {
                 user_id: req.user.id,
             })
                 .then(memberData => {
-                    Watched.create({
-                        tmdb_id: req.body.tmdb_id,
-                        user_id: req.user.id
-                    }).then(newWatched => {
-                        res.json(watchpartyData)
+                    Watchparty.findOne({
+                        where: {
+                            id: watchpartyData.id
+                        },
+                        include: {
+                            model: Member,
+                            include: {
+                                model: User,
+                                attributes: ['email']
+                            }
+                        }
+                    }).then(newWatchparty => {
+                        console.log(newWatchparty);
+                        if (newWatchparty) {
+                            res.status(200).json(newWatchparty.dataValues);
+                        } else {
+                            res.status(500).json({ err: "Could not construct Watch Party." });
+                        }
                     })
-                        .catch((err) => res.json(err))
+                    .catch((err) => res.json(err));
+
+                    // Watched.create({
+                    //     tmdb_id: req.body.tmdb_id,
+                    //     user_id: req.user.id
+                    // }).then(newWatched => {
+                    //     res.json(watchpartyData)
+                    // })
+                    //     .catch((err) => res.json(err))
                 })
                 .catch((err) => res.json(err));
         })

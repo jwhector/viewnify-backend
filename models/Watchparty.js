@@ -10,6 +10,11 @@ Watchparty.init({
         primaryKey: true,
         autoIncrement: true,
     },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "New Watch Party"
+    },
     url:{
         type: DataTypes.STRING,
         allowNull:false,

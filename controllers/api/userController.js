@@ -101,7 +101,7 @@ router.post('/login', (req, res) => {
                 return res.status(401).json({ err: "Invalid email or password" })
             }
             else if (bcrypt.compareSync(req.body.password, userData.password)) {
-                // console.log(process.env.JWT_SECRET);
+                console.log('MADE IT TO BCRYPT');
                 const token = jwt.sign({
                     email: userData.email,
                     id: userData.id
