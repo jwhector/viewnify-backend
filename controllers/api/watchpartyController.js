@@ -131,6 +131,7 @@ router.get('/compare/:url', tokenAuth, (req, res) => {
 router.post('/', tokenAuth, (req, res) => {
     Watchparty.create({
         // limit: req.body.limit,
+        name: req.body.name,
         user_id: req.user.id,
     })
         .then(watchpartyData => {
