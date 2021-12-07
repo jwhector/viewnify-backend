@@ -20,7 +20,7 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     }
 
     // DELETED PROVIDERS/REGION IN URL
-    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg.curPage}${searchGenres}${providers}&with_watch_monetization_types=flatrate`
+    let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg.curPage}${searchGenres}${providers}&watch_region=US&with_watch_monetization_types=flatrate`
 
     return fetch(requestedURL)
 })

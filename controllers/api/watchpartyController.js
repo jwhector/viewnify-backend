@@ -88,7 +88,10 @@ router.get('/compare/:url', tokenAuth, (req, res) => {
         }
     )
         .then(watchparty => {
-            console.log(req.params.url);
+            // console.log(req.params.url);
+            if (!watchparty) {
+                return res.status(404).send('Party not found!');
+            }
             const memberIds = watchparty.dataValues.members.map(member => member.dataValues.user_id)
             if (!memberIds.includes(req.user.id)) {
                 return res.status(403).send('Unauthorized!')
