@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3005
 
 //LOCAL if running local uncomment this if your running locally
-// app.use(cors());
+app.use(cors());
 //DEPLOYED kept this uncommented for main git/heroku
 // app.use(cors({
 //     origin:['https://viewnify.herokuapp.com/']
