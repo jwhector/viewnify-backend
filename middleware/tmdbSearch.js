@@ -23,7 +23,7 @@ const tmdbSearch = ((format, genres, streaming_service, curPg) => {
     let requestedURL = `https://api.themoviedb.org/3/discover/${format}?api_key=${apiKey}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${curPg.curPage}${searchGenres}${providers}&watch_region=US&with_watch_monetization_types=flatrate`
 
 
-    console.log(requestedURL);
+    console.log('Requested URL: ' + requestedURL);
 
     return fetch(requestedURL)
 })

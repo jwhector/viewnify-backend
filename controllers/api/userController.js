@@ -66,7 +66,7 @@ router.post('/', (req, res) => {
         password: req.body.password,
         email: req.body.email,
         genres: req.body.genres,
-        streaming_service: req.body.streaming_service,
+        streaming_service: req.body.streaming_service
     })
         .then(userData => {
             // console.log(process.env.JWT_SECRET);
@@ -77,6 +77,21 @@ router.post('/', (req, res) => {
                 process.env.JWT_SECRET,
                 { expiresIn: "2h" }
             );
+
+            req.body.cached_likes.forEach(cached_like => {
+                Like.create({
+                    tmdb_id: cached_like.tmdb_id,
+                    user_id: userData.id
+                }).catch(err => console.error(err));
+            });
+
+            req.body.cached_dislikes.forEach(cached_dislike => {
+                Dislike.create({
+                    tmdb_id: cached_dislike.tmdb_id,
+                    user_id: userData.id
+                }).catch(err => console.error(err));
+            });
+
             res.status(200).json({
                 token: token,
                 user: userData
