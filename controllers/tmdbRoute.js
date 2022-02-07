@@ -38,9 +38,9 @@ router.post('/tmdbSearch', tokenAuth, (req, res) => {
          // Filter out results that have ids in the set
          const tmdbFiltered = [...(tmdbResults.results)].filter((tmdbResult) => !likes.has(tmdbResult.id) && !dislikes.has(tmdbResult.id) && !haveWatched.has(tmdbResult.id) && tmdbResult.poster_path && tmdbResult.backdrop_path)
 
-         console.log(tmdbFiltered.length)
+        //  console.log(tmdbFiltered)
 
-        res.json(tmdbFiltered)
+        res.json({results: tmdbFiltered, pages: tmdbResults.total_pages});
 
     }).catch(err => {
         console.log(err)
@@ -74,7 +74,7 @@ router.post('/unauthTmdbSearch', async (req, res) => {
     // Filter out results that have ids in the set
     const tmdbFiltered = [...(tmdbResults.results)].filter((tmdbResult) => !likes.has(tmdbResult.id) && !dislikes.has(tmdbResult.id) && !haveWatched.has(tmdbResult.id) && tmdbResult.poster_path && tmdbResult.backdrop_path)
 
-    res.json(tmdbFiltered);
+    res.json({results: tmdbFiltered, pages: tmdbResults.total_pages});
 });
 
 module.exports = router
