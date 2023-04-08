@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3005
 // app.use(cors());
 //DEPLOYED kept this uncommented for main git/heroku
 app.use(cors({
-    origin:['https://viewnify.herokuapp.com/']
+    origin:['https://viewnify.herokuapp.com']
 }))
 
 app.use(logger("dev"));
