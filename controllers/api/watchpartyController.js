@@ -237,6 +237,7 @@ router.post('/join/:id', tokenAuth, (req, res) => {
     )
         .then(data => {
             // MAKE SURE OWNER CAN'T JOIN TWICE!
+            console.log(data[0].members);
             if (data[0].limit > data[0].members.length && data[0].user_id !== req.user.id) {
                 Member.create({
                     watchparty_id: data[0].id,
