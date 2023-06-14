@@ -92,17 +92,22 @@ router.post('/', (req, res) => {
                 }).catch(err => console.error(err));
             });
 
-            res.status(200).json({
-                token: token,
-                user: userData
-            });
+            // res.status(200).json({
+            //     // token: token,
+            //     user: userData
+            // });
+            res.status(200).json(userData);
         })
         .catch(err => {
-            console.log(err)
-            res.status(500).json(err)
+            console.log(err);
+            if (err.errors[0].message === "Validation isEmail on email failed") {
+                res.statusMessage = "Invalid email"
+            }
+            res.status(500).send();
         })
 })
 router.post('/login', (req, res) => {
+    console.log(req);
     User.findOne({
         where: {
             email: req.body.email,
@@ -110,10 +115,10 @@ router.post('/login', (req, res) => {
     })
         .then(userData => {
             if (!userData) {
-                return res.status(401).json({ err: "Invalid email or password" })
+                return res.status(401).json({ error: "Invalid email or password" })
             }
             if (!req.body.password) {
-                return res.status(401).json({ err: "Invalid email or password" })
+                return res.status(401).json({ error: "Invalid email or password" })
             }
             else if (bcrypt.compareSync(req.body.password, userData.password)) {
                 console.log('MADE IT TO BCRYPT');
@@ -125,12 +130,9 @@ router.post('/login', (req, res) => {
                     , {
                         expiresIn: "12h"
                     })
-                res.json({
-                    token: token,
-                    user: userData
-                })
+                res.json(userData)
             } else {
-                return res.status(401).json({ err: "Invalid email or password" })
+                return res.status(401).json({ error: "Invalid email or password" })
             }
         })
         .catch(err => res.json(err))
